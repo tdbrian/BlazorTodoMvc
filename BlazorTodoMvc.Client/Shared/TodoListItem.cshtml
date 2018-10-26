@@ -1,0 +1,40 @@
+﻿@using BlazorTodoMvc.Shared.Models
+<li class="@(Todo.Completed ? "completed" : "") @(Todo.Editing ? "editing" : "")">
+    <div class="view">
+        <input class="toggle" type="checkbox" bind="@Todo.Completed" onclick="@ToggleCompleted"/>
+        <label ondblclick="@StartEditing">@Todo.Title</label>
+        <button class="destroy" onclick="@(evt => DeleteAction(Todo))"></button>
+    </div>
+    @if (Todo.Editing)
+    {
+        <input class="edit" bind="@Todo.Title" onblur="@StopEditing"/>
+    }
+</li>
+@functions
+{
+    [Parameter]
+    TodoItem Todo { get; set; }
+
+    [Parameter]
+    Action<TodoItem> DeleteAction { get; set; }
+
+    [Parameter]
+    Action<TodoItem> UpdateAction { get; set; }
+
+    void StartEditing()
+    {
+        Todo.Editing = true;
+    }
+
+    void StopEditing()
+    {
+        Todo.Editing = false;
+        UpdateAction(Todo);
+    }
+
+    void ToggleCompleted()
+    {
+        Todo.Completed = !Todo.Completed;
+        UpdateAction(Todo);
+    }
+}

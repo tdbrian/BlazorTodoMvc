@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BlazorTodoMvc.Client.Models;
+using BlazorTodoMvc.Shared.Models;
 using Microsoft.AspNetCore.Blazor;
 
 namespace BlazorTodoMvc.Client.Services
@@ -16,22 +16,22 @@ namespace BlazorTodoMvc.Client.Services
             _http = http;
         }
 
-        public async Task<IList<TodoViewModel>> GetTodosAsync()
+        public async Task<IList<TodoItem>> GetTodosAsync()
         {
-            return await _http.GetJsonAsync<List<TodoViewModel>>(TODOS_PATH);
+            return await _http.GetJsonAsync<List<TodoItem>>(TODOS_PATH);
         }
 
-        public async Task PostTodoAsync(TodoViewModel todo)
+        public async Task PostTodoAsync(TodoItem todo)
         {
             await _http.PostJsonAsync(TODOS_PATH, todo);
         }
 
-        public async Task PutTodoAsync(TodoViewModel todo)
+        public async Task PutTodoAsync(TodoItem todo)
         {
             await _http.PutJsonAsync($"{TODOS_PATH}/{todo.Id}", todo);
         }
 
-        public async Task DeleteAsync(TodoViewModel todo)
+        public async Task DeleteAsync(TodoItem todo)
         {
             await _http.DeleteAsync($"{TODOS_PATH}/{todo.Id}");
         }

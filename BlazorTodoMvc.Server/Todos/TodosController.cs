@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using BlazorTodoMvc.Shared.Dtos;
+using BlazorTodoMvc.Shared.Models;
 
 namespace BlazorTodoMvc.Server.Todos
 {
@@ -9,13 +9,13 @@ namespace BlazorTodoMvc.Server.Todos
     public class TodosController : Controller
     {
         [HttpGet]
-        public IEnumerable<TodoDto> Get()
+        public IEnumerable<TodoItem> Get()
         {
             return TodosRepo.GetTodos();
         }
 
         [HttpPost]
-        public void Post([FromBody] TodoDto todo)
+        public void Post([FromBody] TodoItem todo)
         {
             var todos = TodosRepo.GetTodos();
             todos.Add(todo);
@@ -23,7 +23,7 @@ namespace BlazorTodoMvc.Server.Todos
         }
 
         [HttpPut("{id}")]
-        public void Put([FromRoute]Guid id, [FromBody] TodoDto todo)
+        public void Put([FromRoute]Guid id, [FromBody] TodoItem todo)
         {
             var todos = TodosRepo.GetTodos();
             todos[todos.FindIndex(ind => ind.Id == todo.Id)] = todo;

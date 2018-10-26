@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlazorTodoMvc.Client.Models;
+using BlazorTodoMvc.Shared.Models;
 
 namespace BlazorTodoMvc.Client.Services
 {
     public interface ITodosService
     {
-        Task DeleteAsync(TodoViewModel todo);
-        Task<IList<TodoViewModel>> GetTodosAsync();
-        Task PostTodoAsync(TodoViewModel todo);
-        Task PutTodoAsync(TodoViewModel todo);
+        Task DeleteAsync(TodoItem todo);
+        Task<IList<TodoItem>> GetTodosAsync();
+        Task PostTodoAsync(TodoItem todo);
+        Task PutTodoAsync(TodoItem todo);
     }
 }

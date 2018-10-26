@@ -1,0 +1,26 @@
+﻿@using BlazorTodoMvc.Shared.Models
+<form id="todo-form" onsubmit="@Add">
+    <input class="new-todo" placeholder="What needs to be done?" autofocus="" bind="@NewItemText" />
+</form>
+
+@functions
+{
+    string NewItemText { get; set; }
+
+    [Parameter]
+    Action<TodoItem> AddItemAction { get; set; }
+
+    void Add()
+    {
+        AddItemAction(new TodoItem
+        {
+            Editing = false,
+            Completed = false,
+            Title = NewItemText.Trim(),
+            Id = Guid.NewGuid()
+        });
+
+        NewItemText = null;
+    }
+
+}

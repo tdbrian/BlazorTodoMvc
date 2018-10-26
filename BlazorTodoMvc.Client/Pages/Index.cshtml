@@ -1,12 +1,11 @@
 ﻿@page "/"
-@using BlazorTodoMvc.Client.Models
 @using BlazorTodoMvc.Client.Services
+@using BlazorTodoMvc.Shared.Models
 @inject ITodosService TodosService
 
 <header class="header">
     <h1>todos</h1>
-    <input class="new-todo" type="text" placeholder="What needs to be done?" autofocus="" bind="@NewTodo" 
-           oninput="(this.dispatchEvent(new CustomEvent('change', { bubbles: true })))" onkeydown="@AddTodo"/>
+    <AddTodo AddItemAction="@AddItem" />
 </header>
 
 @if (Todos.Any())
@@ -17,75 +16,48 @@
         <ul class="todo-list">
             @foreach (var todo in Todos)
             {
-                <li class="@(todo.Completed ? "completed" : "") @(todo.Editing ? "editing" : "")">
-                    @if (todo.Editing)
-                    {
-                        <input class="edit" bind="@todo.Title" onblur="@(evt => StopEditing(todo))"/>
-                    }
-                    else
-                    {
-                        <div class="view">
-                            <input class="toggle" type="checkbox" onclick="@(evt => ToggleCompleted(todo))" value="@todo.Completed"/>
-                            <label ondblclick="@(evt => EditTodo(todo))">@todo.Title</label>
-                            <button class="destroy" onclick="@(evt => Delete(todo))"></button>
-                        </div>
-                    }
-                </li>
+                <TodoListItem Todo="@todo" DeleteAction="@Delete" UpdateAction="@Update"></TodoListItem>
             }
         </ul>
     </section>
 
     <footer class="footer">
-        <span class="todo-count"><strong>@Todos.Count </strong>@(Todos.Count == 0 || Todos.Count > 1 ? "items" : "item") left</span>
+        <span class="todo-count"><strong>@GetRemainingCount() </strong>@(GetRemainingCount() == 0 || GetRemainingCount() > 1 ? "items" : "item") left</span>
         <button class="clear-completed">Clear completed</button>
     </footer>
 }
 
 @functions {
-    public string NewTodo { get; set; } = "";
-    public IList<TodoViewModel> Todos = new List<TodoViewModel>();
+    public IList<TodoItem> Todos = new List<TodoItem>();
 
     protected override async Task OnInitAsync()
     {
         Todos = await TodosService.GetTodosAsync();
-        Console.WriteLine("started");
     }
 
-    void AddTodo(UIKeyboardEventArgs arg)
+    void AddItem(TodoItem todo)
     {
-        if (arg.Code != "Enter") return;
-        var newTodoObject = new TodoViewModel
-        {
-            Editing = false,
-            Completed = false,
-            Title = NewTodo.Trim(),
-            Id = Guid.NewGuid()
-        };
-        Todos.Add(newTodoObject);
-        TodosService.PostTodoAsync(newTodoObject);
-        NewTodo = "";
+        Todos.Add(todo);
+        StateHasChanged();
+        TodosService.PostTodoAsync(todo);
     }
 
-    void EditTodo(TodoViewModel todo)
+    void Update(TodoItem todo)
     {
-        todo.Editing = true;
-    }
-
-    void StopEditing(TodoViewModel todo)
-    {
-        todo.Editing = false;
+        StateHasChanged();
         TodosService.PutTodoAsync(todo);
     }
 
-    void Delete(TodoViewModel todo)
+
+    void Delete(TodoItem todo)
     {
         Todos.Remove(todo);
+        StateHasChanged();
         TodosService.DeleteAsync(todo);
     }
 
-    void ToggleCompleted(TodoViewModel todo)
+    int GetRemainingCount()
     {
-        todo.Completed = !todo.Completed;
-        TodosService.PutTodoAsync(todo);
+        return Todos.Count(item => !item.Completed);
     }
 }
