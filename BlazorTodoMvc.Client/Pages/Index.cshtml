@@ -1,7 +1,91 @@
 ﻿@page "/"
+@using BlazorTodoMvc.Client.Models
+@using BlazorTodoMvc.Client.Services
+@inject ITodosService TodosService
 
-<h1>Hello, world!</h1>
+<header class="header">
+    <h1>todos</h1>
+    <input class="new-todo" type="text" placeholder="What needs to be done?" autofocus="" bind="@NewTodo" 
+           oninput="(this.dispatchEvent(new CustomEvent('change', { bubbles: true })))" onkeydown="@AddTodo"/>
+</header>
 
-Welcome to your new app.
+@if (Todos.Any())
+{
+    <section class="main">
+        <input id="toggle-all" class="toggle-all" type="checkbox"/>
+        <label for="toggle-all">Mark all complete</label>
+        <ul class="todo-list">
+            @foreach (var todo in Todos)
+            {
+                <li class="@(todo.Completed ? "completed" : "") @(todo.Editing ? "editing" : "")">
+                    @if (todo.Editing)
+                    {
+                        <input class="edit" bind="@todo.Title" onblur="@(evt => StopEditing(todo))"/>
+                    }
+                    else
+                    {
+                        <div class="view">
+                            <input class="toggle" type="checkbox" onclick="@(evt => ToggleCompleted(todo))" value="@todo.Completed"/>
+                            <label ondblclick="@(evt => EditTodo(todo))">@todo.Title</label>
+                            <button class="destroy" onclick="@(evt => Delete(todo))"></button>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    </section>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <footer class="footer">
+        <span class="todo-count"><strong>@Todos.Count </strong>@(Todos.Count == 0 || Todos.Count > 1 ? "items" : "item") left</span>
+        <button class="clear-completed">Clear completed</button>
+    </footer>
+}
+
+@functions {
+    public string NewTodo { get; set; } = "";
+    public IList<TodoViewModel> Todos = new List<TodoViewModel>();
+
+    protected override async Task OnInitAsync()
+    {
+        Todos = await TodosService.GetTodosAsync();
+        Console.WriteLine("started");
+    }
+
+    void AddTodo(UIKeyboardEventArgs arg)
+    {
+        if (arg.Code != "Enter") return;
+        var newTodoObject = new TodoViewModel
+        {
+            Editing = false,
+            Completed = false,
+            Title = NewTodo.Trim(),
+            Id = Guid.NewGuid()
+        };
+        Todos.Add(newTodoObject);
+        TodosService.PostTodoAsync(newTodoObject);
+        NewTodo = "";
+    }
+
+    void EditTodo(TodoViewModel todo)
+    {
+        todo.Editing = true;
+    }
+
+    void StopEditing(TodoViewModel todo)
+    {
+        todo.Editing = false;
+        TodosService.PutTodoAsync(todo);
+    }
+
+    void Delete(TodoViewModel todo)
+    {
+        Todos.Remove(todo);
+        TodosService.DeleteAsync(todo);
+    }
+
+    void ToggleCompleted(TodoViewModel todo)
+    {
+        todo.Completed = !todo.Completed;
+        TodosService.PutTodoAsync(todo);
+    }
+}
