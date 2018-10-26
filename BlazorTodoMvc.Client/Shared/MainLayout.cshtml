@@ -1,15 +1,15 @@
 ﻿@inherits BlazorLayoutComponent
 
-<div class="sidebar">
-    <NavMenu />
-</div>
+<section class="todoapp">
+    @Body
+</section>
 
-<div class="main">
-    <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-    </div>
-
-    <div class="content px-4">
-        @Body
-    </div>
-</div>
+<footer class="info">
+    <NavLink href="/">Home</NavLink><br /> | <NavLink href="/About">See About</NavLink><br />
+    <p>Double-click to edit a todo</p>
+    <p>
+        Created by <a href="http://github.com/tdbrian">Thomas Brian</a>
+        using <a href="https://blazor.net/">Blazor</a>
+    </p>
+    <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+</footer>

@@ -1,7 +1,28 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<header class="header">
+    <h1>todos</h1>
+    <form id="todo-form">
+        <input class="new-todo" placeholder="What needs to be done?" autofocus=""/>
+    </form>
+</header>
 
-Welcome to your new app.
+<section class="main">
+    <input id="toggle-all" class="toggle-all" type="checkbox" />
+    <label for="toggle-all">Mark all complete</label>
+    <ul class="todo-list">
+        <li>
+            <div class="view">
+                <input class="toggle" type="checkbox"/>
+                <label></label>
+                <button class="destroy"></button>
+            </div>
+                <input class="edit"/>
+        </li>
+    </ul>
+</section>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<footer class="footer">
+    <span class="todo-count"><strong>0 </strong>items left</span>
+    <button class="clear-completed">Clear completed</button>
+</footer>
