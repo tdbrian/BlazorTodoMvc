@@ -11,7 +11,7 @@
 @if (Todos.Any())
 {
     <section class="main">
-        <input id="toggle-all" class="toggle-all" type="checkbox"/>
+        <input id="toggle-all" class="toggle-all" type="checkbox" />
         <label for="toggle-all">Mark all complete</label>
         <ul class="todo-list">
             @foreach (var todo in Todos)
@@ -25,39 +25,40 @@
         <span class="todo-count"><strong>@GetRemainingCount() </strong>@(GetRemainingCount() == 0 || GetRemainingCount() > 1 ? "items" : "item") left</span>
         <button class="clear-completed">Clear completed</button>
     </footer>
+
 }
 
 @functions {
-    public IList<TodoItem> Todos = new List<TodoItem>();
+public IList<TodoItem> Todos = new List<TodoItem>();
 
-    protected override async Task OnInitAsync()
-    {
-        Todos = await TodosService.GetTodosAsync();
-    }
+protected override async Task OnInitAsync()
+{
+    Todos = await TodosService.GetTodosAsync();
+}
 
-    void AddItem(TodoItem todo)
-    {
-        Todos.Add(todo);
-        StateHasChanged();
-        TodosService.PostTodoAsync(todo);
-    }
+void AddItem(TodoItem todo)
+{
+    Todos.Add(todo);
+    StateHasChanged();
+    TodosService.PostTodoAsync(todo);
+}
 
-    void Update(TodoItem todo)
-    {
-        StateHasChanged();
-        TodosService.PutTodoAsync(todo);
-    }
+void Update(TodoItem todo)
+{
+    StateHasChanged();
+    TodosService.PutTodoAsync(todo);
+}
 
 
-    void Delete(TodoItem todo)
-    {
-        Todos.Remove(todo);
-        StateHasChanged();
-        TodosService.DeleteAsync(todo);
-    }
+void Delete(TodoItem todo)
+{
+    Todos.Remove(todo);
+    StateHasChanged();
+    TodosService.DeleteAsync(todo);
+}
 
-    int GetRemainingCount()
-    {
-        return Todos.Count(item => !item.Completed);
-    }
+int GetRemainingCount()
+{
+    return Todos.Count(item => !item.Completed);
+}
 }
